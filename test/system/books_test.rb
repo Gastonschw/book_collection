@@ -1,3 +1,4 @@
+# AI-assisted (OpenAI/agent), 9/14/26 — prompt: "update the scaffold deletion flow for dedicated confirmation".
 require "application_system_test_case"
 
 class BooksTest < ApplicationSystemTestCase
@@ -34,8 +35,11 @@ class BooksTest < ApplicationSystemTestCase
 
   test "should destroy Book" do
     visit book_url(@book)
-    click_on "Destroy this book", match: :first
+    click_on "Delete"
+    assert_current_path delete_book_path(@book)
+    click_on "Yes, delete"
 
+    assert_current_path books_path
     assert_text "Book was successfully destroyed"
   end
 end

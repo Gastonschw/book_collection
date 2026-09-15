@@ -1,3 +1,4 @@
+<%# AI-assisted (OpenAI/agent), 9/14/26 — prompt: "link to book delete confirmation using path helpers; retain home notices". %>
 <p style="color: green"><%= notice %></p>
 
 <% content_for :title, "Books" %>
@@ -8,7 +9,8 @@
   <% @books.each do |book| %>
     <%= render book %>
     <p>
-      <%= link_to "Show this book", book %>
+      <%= link_to "Show this book", book_path(book) %> |
+      <%= link_to "Delete", delete_book_path(book) %>
     </p>
   <% end %>
 </div>
