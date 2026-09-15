@@ -1,3 +1,4 @@
+<%# AI-assisted (OpenAI/agent), 9/14/26 — prompt: "replace immediate deletion with a delete confirmation link". %>
 <p style="color: green"><%= notice %></p>
 
 <%= render @book %>
@@ -6,5 +7,5 @@
   <%= link_to "Edit this book", edit_book_path(@book) %> |
   <%= link_to "Back to books", books_path %>
 
-  <%= button_to "Destroy this book", @book, method: :delete %>
+  <%= link_to "Delete", delete_book_path(@book) %>
 </div>
