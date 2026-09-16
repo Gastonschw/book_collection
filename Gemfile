@@ -9,7 +9,7 @@ gem "turbo-rails"
 gem "stimulus-rails"
 gem "jbuilder"
 gem "rexml"
-gem "json", "< 3"
+gem "json", "< 4"
 
 # gem "bcrypt", "~> 3.1.7"
 
