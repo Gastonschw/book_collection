@@ -1,8 +1,12 @@
+# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer".
+# Signed existing feature scenarios in through the shared Google callback helper.
 # location: spec/feature/integration_spec.rb
 # AI-assisted (OpenAI/agent), 9/14/26 — prompt: "test creation notices on home and the dedicated delete confirmation flow".
 require 'rails_helper'
 
 RSpec.describe 'Creating a book', type: :feature do
+  before { sign_in_with_google }
+
   scenario 'valid inputs' do
     visit new_book_path
     fill_in 'book[title]', with: 'harry potter'
@@ -21,6 +25,8 @@ RSpec.describe 'Creating a book', type: :feature do
 end
 
 RSpec.describe 'Deleting a book', type: :feature do
+  before { sign_in_with_google }
+
   scenario 'confirming deletion returns home with a notice and removes the book' do
     book = Book.create!(title: 'The Hobbit')
 

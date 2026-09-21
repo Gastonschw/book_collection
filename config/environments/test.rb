@@ -1,3 +1,8 @@
+# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer".
+# Enabled isolated OmniAuth test mode without contacting Google.
+require "omniauth"
+OmniAuth.config.test_mode = true
+
 # The test environment is used exclusively to run your application's
 # test suite. You never need to work with it otherwise. Remember that
 # your test database is "scratch space" for the test suite and is wiped
