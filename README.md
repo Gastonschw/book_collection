@@ -83,6 +83,10 @@ repair is already applied locally; a fresh container needs a discoverable Chrome
 installation. GitHub CI installs Chrome directly and runs RSpec, request tests,
 and system tests independently.
 
+The first remote CI run exposed pre-existing non-executable `bin/` scripts.
+Their Git executable bits are restored, and `.gitattributes` enforces LF script
+endings so Linux CI and production do not depend on Windows mount permissions.
+
 Verified locally:
 
 - RSpec: **10 examples, 0 failures** (mocked OAuth success, protected routes,
