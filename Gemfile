@@ -1,3 +1,4 @@
+# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer"; added authentication and local ENV loading dependencies.
 source "https://rubygems.org"
 
 gem "rails", "~> 8.0.3"
@@ -10,6 +11,10 @@ gem "stimulus-rails"
 gem "jbuilder"
 gem "rexml"
 gem "json", "< 3"
+gem "devise", "~> 4.9"
+gem "omniauth", "~> 2.1"
+gem "omniauth-rails_csrf_protection", "~> 1.0"
+gem "omniauth-google-oauth2", "~> 1.1"
 
 # gem "bcrypt", "~> 3.1.7"
 
@@ -26,6 +31,7 @@ gem "thruster", require: false
 # gem "image_processing", "~> 1.2"
 
 group :development, :test do
+  gem "dotenv-rails"
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false

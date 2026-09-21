@@ -1,3 +1,4 @@
+/* AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer"; generated alert, notice, and success flash colors. */
 /*
  * This is a manifest file that'll be compiled into application.css.
  *
@@ -8,3 +9,7 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+.flash__alert { color: red; }
+.flash__notice { color: blue; }
+.flash__success { color: green; }

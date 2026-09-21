@@ -1,0 +1,3 @@
+<%# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer"; generated the Google OAuth POST sign-in form with Turbo disabled. %>
+<h2>You're logged out! Log in to continue.</h2>
+<%= button_to "Sign in with Google", admin_google_oauth2_omniauth_authorize_path, method: :post, form: { data: { turbo: "false" } } %>

@@ -1,4 +1,12 @@
+# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer"; added Google callbacks, session routes and Books home while preserving CRUD.
 Rails.application.routes.draw do
+  root "books#index"
+  devise_for :admins, controllers: { omniauth_callbacks: "admins/omniauth_callbacks" }
+  devise_scope :admin do
+    get "admins/sign_in", to: "admins/sessions#new", as: :new_admin_session
+    get "admins/sign_out", to: "admins/sessions#destroy", as: :destroy_admin_session
+  end
+
   # AI-assisted (OpenAI/agent), 9/14/26 — prompt: "add a resourceful book delete confirmation page".
   resources :books do
     member { get :delete }
@@ -12,7 +20,4 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end
