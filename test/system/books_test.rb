@@ -1,9 +1,12 @@
+# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer".
+# Authenticated existing browser CRUD scenarios through the shared Google callback mock.
 # AI-assisted (OpenAI/agent), 9/14/26 — prompt: "update scaffold flows for home redirects and dedicated delete confirmation".
 require "application_system_test_case"
 
 class BooksTest < ApplicationSystemTestCase
   setup do
     @book = books(:one)
+    sign_in_with_google
   end
 
   test "visiting the index" do

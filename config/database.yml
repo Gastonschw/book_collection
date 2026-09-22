@@ -1,3 +1,4 @@
+# AI-assisted — prompt: "Get Heroku up"; use one production PostgreSQL database from DATABASE_URL.
 # PostgreSQL. Versions 9.3 and up are supported.
 #
 # Install the pg driver:
@@ -82,20 +83,6 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: test_app_production
-    username: test_app
-    password: <%= ENV["TEST_APP_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: test_app_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: test_app_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: test_app_production_cable
-    migrations_paths: db/cable_migrate
+  <<: *default
+  database: test_app_production
+  url: <%= ENV["DATABASE_URL"] %>

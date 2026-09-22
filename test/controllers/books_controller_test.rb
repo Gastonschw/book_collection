@@ -1,9 +1,14 @@
+# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer".
+# Authenticated CRUD requests using a persisted Admin and Devise integration helpers.
 # AI-assisted (OpenAI/agent), 9/14/26 — prompt: "update scaffold expectations for book mutations redirecting home".
 require "test_helper"
 
 class BooksControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
   setup do
     @book = books(:one)
+    sign_in Admin.create!(email: "request-admin@example.com", full_name: "Request Admin")
   end
 
   test "should get index" do

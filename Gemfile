@@ -1,4 +1,7 @@
+# AI-assisted — prompts: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer" and "Get Heroku up"; configure OAuth dependencies and the deployment Ruby version.
 source "https://rubygems.org"
+
+ruby file: ".ruby-version"
 
 gem "rails", "~> 8.0.3"
 gem "propshaft"
@@ -10,6 +13,10 @@ gem "stimulus-rails"
 gem "jbuilder"
 gem "rexml"
 gem "json", "< 3"
+gem "devise", "~> 4.9"
+gem "omniauth", "~> 2.1"
+gem "omniauth-rails_csrf_protection", "~> 1.0"
+gem "omniauth-google-oauth2", "~> 1.1"
 
 # gem "bcrypt", "~> 3.1.7"
 
@@ -26,6 +33,7 @@ gem "thruster", require: false
 # gem "image_processing", "~> 1.2"
 
 group :development, :test do
+  gem "dotenv-rails"
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false

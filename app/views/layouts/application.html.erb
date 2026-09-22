@@ -1,3 +1,4 @@
+<%# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer"; generated escaped global flash rendering while preserving the Rails 8 layout. %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -23,6 +24,9 @@
   </head>
 
   <body>
+    <% flash.each do |key, value| %>
+      <section class="flash flash__<%= key %>"><%= value %></section>
+    <% end %>
     <%= yield %>
   </body>
 </html>

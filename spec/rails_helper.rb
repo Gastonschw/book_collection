@@ -1,3 +1,5 @@
+# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer".
+# Loaded shared OAuth support and configured authentication helpers with isolated mocks.
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
@@ -9,6 +11,9 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 # return unless Rails.env.test?
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
+require "omniauth"
+require_relative "support/omniauth_helper"
+OmniAuth.config.test_mode = true
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -35,6 +40,18 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 RSpec.configure do |config|
+  config.include OmniauthHelper, type: :feature
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
+  config.around(:each, type: :feature) do |example|
+    preserve_omniauth_mock_state
+    begin
+      example.run
+    ensure
+      restore_omniauth_mock_state
+    end
+  end
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')

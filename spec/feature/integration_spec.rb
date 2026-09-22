@@ -1,15 +1,20 @@
+# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer".
+# Adapted the course OAuth reference to authenticated book navigation, persistence, and existing CRUD scenarios.
 # location: spec/feature/integration_spec.rb
 # AI-assisted (OpenAI/agent), 9/14/26 — prompt: "test creation notices on home and the dedicated delete confirmation flow".
 require 'rails_helper'
 
 RSpec.describe 'Creating a book', type: :feature do
-  scenario 'valid inputs' do
-    visit new_book_path
+  before { sign_in_with_google }
+
+  scenario 'saves and displays a book created from the authenticated home page' do
+    click_on 'New book'
     fill_in 'book[title]', with: 'harry potter'
     click_on 'Create Book'
     expect(page).to have_current_path(books_path)
     expect(page).to have_content('Book was successfully created.')
     expect(page).to have_content('harry potter')
+    expect(Book.order(:id).last.title).to eq('harry potter')
   end
 
   scenario 'invalid inputs' do
@@ -21,6 +26,8 @@ RSpec.describe 'Creating a book', type: :feature do
 end
 
 RSpec.describe 'Deleting a book', type: :feature do
+  before { sign_in_with_google }
+
   scenario 'confirming deletion returns home with a notice and removes the book' do
     book = Book.create!(title: 'The Hobbit')
 

@@ -1,7 +1,10 @@
+<%# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer"; generated the signed-in welcome and sign-out link and moved notices to the layout. %>
 <%# AI-assisted (OpenAI/agent), 9/14/26 — prompt: "link to delete confirmation with path helpers and display home flash notices". %>
-<p id="notice" style="color: green"><%= notice %></p>
 
 <% content_for :title, "Books" %>
+
+<h2>You're logged in! Welcome<%= " #{current_admin.full_name}" if current_admin&.full_name %>!</h2>
+<%= link_to "Sign Out", destroy_admin_session_path %>
 
 <h1>Books</h1>
 

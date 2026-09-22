@@ -1,3 +1,5 @@
+# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer".
+# Added RSpec and separate Minitest and browser-suite invocations so every suite executes.
 name: CI
 
 on:
@@ -90,7 +92,11 @@ jobs:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
           # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
+        run: |
+          bin/rails db:test:prepare
+          bundle exec rspec
+          bin/rails test
+          bin/rails test:system
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
