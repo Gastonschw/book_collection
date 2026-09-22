@@ -89,8 +89,8 @@ endings so Linux CI and production do not depend on Windows mount permissions.
 
 Verified locally:
 
-- RSpec: **10 examples, 0 failures** (mocked OAuth success, protected routes,
-  invalid credentials, logout, stored-location return, and existing book specs).
+- RSpec: **11 examples, 0 failures** (mocked OAuth account creation/reuse,
+  protected routes, invalid credentials, logout, stored-location return, and book specs).
 - Minitest: **7 tests / 15 assertions, 0 failures or errors**.
 - Browser system suite: **4 tests / 8 assertions, 0 failures or errors**.
 - RuboCop: passed after correcting a route-file whitespace offense.
@@ -103,6 +103,13 @@ Verified locally:
 
 OmniAuth mock mode is enabled **only in the test environment**. The expected
 invalid-credentials scenario may log an OmniAuth error even though its test passes.
+
+The updated course reference is adapted to the existing `spec/feature` convention:
+login uses the shared mock and callback, book creation follows the **New book**
+link from the authenticated home page and checks the persisted title, and a
+returning-account scenario verifies an existing Admin is reused. OmniAuth test
+mode is set inside `Rails.application.configure` and in `spec/rails_helper.rb`;
+mock state is restored even when a scenario fails.
 
 Brakeman 8.0.6: **0 scan errors, 1 weak-confidence warning**:
 

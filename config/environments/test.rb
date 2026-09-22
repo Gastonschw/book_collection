@@ -1,7 +1,6 @@
 # AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer".
 # Enabled isolated OmniAuth test mode without contacting Google.
 require "omniauth"
-OmniAuth.config.test_mode = true
 
 # The test environment is used exclusively to run your application's
 # test suite. You never need to work with it otherwise. Remember that
@@ -9,6 +8,8 @@ OmniAuth.config.test_mode = true
 # and recreated between test runs. Don't rely on the data there!
 
 Rails.application.configure do
+  OmniAuth.config.test_mode = true
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # While tests run files are not watched, reloading is not necessary.
