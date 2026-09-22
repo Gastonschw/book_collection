@@ -155,17 +155,17 @@ and compiled stylesheet, and HTTP 422 for an OAuth POST without a CSRF token.
 A Basic one-off dyno verified PostgreSQL book create/read/update/delete and Solid
 Cache against the deployed database (19 tables); its transaction was rolled back.
 
-**Remaining login blocker:** the Google button reaches Google, which currently
-returns `redirect_uri_mismatch`. Add this exact additional authorized redirect URI
-to the existing Google Web client, retaining localhost:
+The production callback is now registered. A fresh live browser check reached
+Google's normal sign-in page; `redirect_uri_mismatch` no longer occurred.
+The registered additional redirect URI is:
 
 ```text
 https://gastonschw-book-collection-6f3a4ed066c6.herokuapp.com/admins/auth/google_oauth2/callback
 ```
 
-Google Cloud: Google Auth Platform → Clients → Web client → Authorized redirect
-URIs → Add URI → Save. Real deployed login and authenticated browser CRUD still
-need to be exercised after that change; no production authentication bypass or
+Keep the localhost redirect URI for development. Completing real Google consent
+and the return to the app, then authenticated browser CRUD/sign-out, still needs
+the developer's own browser session. No production authentication bypass or
 OmniAuth mock mode was enabled.
 
 Papertrail provisioning and its attached HTTPS drain to
