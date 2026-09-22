@@ -139,9 +139,44 @@ separate from the OAuth change. `output.html` is generated locally and ignored b
 
 ## Heroku deployment and remaining submission work
 
-Deployment configuration is prepared; **no live Heroku deployment or Papertrail
-installation has been verified**. The CLI is installed in `magical_haibt`, but
-browser authorization is still required before account access and provisioning.
+Deployed on 2026-09-22: **[Book Collection](https://gastonschw-book-collection-6f3a4ed066c6.herokuapp.com/)**.
+Heroku app: `gastonschw-book-collection`, US Cedar / Heroku-24, release **v5**
+from commit **7126bb7**. One **Basic** web dyno is up; PostgreSQL
+`postgresql-clear-36593` uses **Essential-0**; Papertrail
+`papertrail-objective-56880` uses the free **Choklad** plan.
+
+Paid deployment was explicitly approved instead of waiting for student credits.
+The recurring web/database rate is approximately **$12/month**, prorated for usage,
+before taxes or credits; release/one-off dynos also consume billable usage.
+Scaling web to zero stops web usage but does **not** stop database charges.
+
+Live verification passed: `/up` HTTP 200, signed-out Books redirect, sign-in page
+and compiled stylesheet, and HTTP 422 for an OAuth POST without a CSRF token.
+A Basic one-off dyno verified PostgreSQL book create/read/update/delete and Solid
+Cache against the deployed database (19 tables); its transaction was rolled back.
+
+**Remaining login blocker:** the Google button reaches Google, which currently
+returns `redirect_uri_mismatch`. Add this exact additional authorized redirect URI
+to the existing Google Web client, retaining localhost:
+
+```text
+https://gastonschw-book-collection-6f3a4ed066c6.herokuapp.com/admins/auth/google_oauth2/callback
+```
+
+Google Cloud: Google Auth Platform → Clients → Web client → Authorized redirect
+URIs → Add URI → Save. Real deployed login and authenticated browser CRUD still
+need to be exercised after that change; no production authentication bypass or
+OmniAuth mock mode was enabled.
+
+Papertrail provisioning and its attached HTTPS drain to
+`logs.collector.na-01.cloud.solarwinds.com` were verified. **Event delivery in the
+Papertrail dashboard has not been verified**: the managed browser has no Heroku
+web session, and the legacy Papertrail CLI plugin requires a token the add-on did
+not supply. Open the [Papertrail dashboard through Heroku SSO](https://addons-sso.heroku.com/apps/gastonschw-book-collection/addons/papertrail)
+in your own logged-in browser, trigger an app request, and capture the log events.
+
+The Heroku build succeeded with the pinned Ruby 3.4.6, but warned that Ruby 3.4.10
+is available. Runtime/framework upgrades remain separate from this deployment.
 
 ### Production configuration
 
@@ -155,7 +190,7 @@ browser authorization is still required before account access and provisioning.
 - `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` must be set as Heroku
   config vars. Local `.env` is ignored and is not loaded in production.
 - HTTPS proxy handling, secure cookies, and tagged STDOUT logging are enabled.
-  Heroku captures STDOUT; Papertrail will consume the application's log stream.
+  Heroku captures STDOUT; the provisioned Papertrail add-on has an attached log drain.
 - No separate worker dyno is required for current book CRUD/OAuth. If background
   jobs are added, enable the existing Solid Queue Puma integration or explicitly
   provision a worker; database-backed enqueueing alone does not process jobs.
@@ -193,10 +228,10 @@ a running queue worker or complete Google's real token exchange on Heroku.
    Papertrail only after confirming its available plan is free; trigger a request
    and verify its app log events before taking the required screenshots.
 
-Human-only submission work remains: browser account authorization, Google Cloud
-callback registration and real deployed login, required screenshots (including
-Brakeman and Heroku/Papertrail evidence), written answers, AI citation, and final
-PDF submission.
+Human-only submission work remains: Google Cloud callback registration and real
+deployed login, authenticated browser CRUD/sign-out, Papertrail event inspection,
+required screenshots (including Brakeman and Heroku/Papertrail evidence), written
+answers, AI citation, and final PDF submission.
 
 ## AI-assisted change record
 
