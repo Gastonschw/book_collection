@@ -163,17 +163,19 @@ The registered additional redirect URI is:
 https://gastonschw-book-collection-6f3a4ed066c6.herokuapp.com/admins/auth/google_oauth2/callback
 ```
 
-Keep the localhost redirect URI for development. Completing real Google consent
-and the return to the app, then authenticated browser CRUD/sign-out, still needs
-the developer's own browser session. No production authentication bypass or
-OmniAuth mock mode was enabled.
+Keep the localhost redirect URI for development. Developer-provided screenshots
+confirm the real Google account chooser, successful login back to the deployed
+Books page with its green authentication flash, and successful sign-out. No
+production authentication bypass or OmniAuth mock mode was enabled. Authenticated
+browser CRUD was not shown; deployed database CRUD was verified separately above.
 
 Papertrail provisioning and its attached HTTPS drain to
-`logs.collector.na-01.cloud.solarwinds.com` were verified. **Event delivery in the
-Papertrail dashboard has not been verified**: the managed browser has no Heroku
-web session, and the legacy Papertrail CLI plugin requires a token the add-on did
-not supply. Open the [Papertrail dashboard through Heroku SSO](https://addons-sso.heroku.com/apps/gastonschw-book-collection/addons/papertrail)
-in your own logged-in browser, trigger an app request, and capture the log events.
+`logs.collector.na-01.cloud.solarwinds.com` were verified. Developer-provided
+Papertrail dashboard screenshots confirm received app/router events, including
+timestamped `Completed 200 OK` entries for this app. Filtering on `"Completed 200"`
+produced submission evidence without OAuth callback codes or state values.
+Open the [Papertrail dashboard through Heroku SSO](https://addons-sso.heroku.com/apps/gastonschw-book-collection/addons/papertrail)
+in your own logged-in browser.
 
 The Heroku build succeeded with the pinned Ruby 3.4.6, but warned that Ruby 3.4.10
 is available. Runtime/framework upgrades remain separate from this deployment.
@@ -228,10 +230,10 @@ a running queue worker or complete Google's real token exchange on Heroku.
    Papertrail only after confirming its available plan is free; trigger a request
    and verify its app log events before taking the required screenshots.
 
-Human-only submission work remains: Google Cloud callback registration and real
-deployed login, authenticated browser CRUD/sign-out, Papertrail event inspection,
-required screenshots (including Brakeman and Heroku/Papertrail evidence), written
-answers, AI citation, and final PDF submission.
+Captured submission evidence now includes the Google account chooser, successful
+deployed login with green flash, signed-out page, and filtered Papertrail events.
+Remaining submission work: separate Heroku log-view and Brakeman report screenshots,
+written answers, AI citation, and assembly/export of the final PDF.
 
 ## AI-assisted change record
 
