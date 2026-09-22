@@ -1,5 +1,7 @@
-# AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer"; added authentication and local ENV loading dependencies.
+# AI-assisted — prompts: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer" and "Get Heroku up"; configure OAuth dependencies and the deployment Ruby version.
 source "https://rubygems.org"
+
+ruby file: ".ruby-version"
 
 gem "rails", "~> 8.0.3"
 gem "propshaft"

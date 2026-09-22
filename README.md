@@ -1,4 +1,4 @@
-<!-- AI-assisted — prompt: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer"; documented implementation, verified startup, test results, and remaining lab work. -->
+<!-- AI-assisted — prompts: "Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer" and "Get Heroku up"; documented OAuth, single-database deployment, verification, and remaining account authorization. -->
 # Book Collection — CSCE 431
 
 Rails 8 / PostgreSQL title-only book CRUD with Google-only Devise Admin sign-in.
@@ -16,7 +16,7 @@ image recipe, not the course development container setup.
    ```powershell
    docker start magical_haibt
    ```
-2. An ignored, empty `.env` has been prepared locally. On another checkout,
+2. This checkout has an ignored local `.env`. On another checkout,
    copy `.env.example` to `.env` **only if `.env` does not already exist**.
    Fill in `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` yourself.
    `dotenv-rails` loads this file in development/test; production uses platform ENV.
@@ -35,7 +35,7 @@ image recipe, not the course development container setup.
 
 The server starts without credentials so the signed-out page and mock tests can
 be checked, but **real Google login requires your configured client credentials**.
-No actual Google client credentials were supplied or verified during implementation.
+Real local Google sign-in was subsequently confirmed by the developer.
 
 ## Authentication behavior
 
@@ -61,12 +61,27 @@ suite in this environment:
 ```powershell
 docker exec -e RAILS_ENV=test -w /csce431/test_app magical_haibt bin/rails db:migrate
 docker exec -w /csce431/test_app magical_haibt bundle exec rspec
-docker exec -w /csce431/test_app magical_haibt bin/rails test
-docker exec -e CHROME_NO_SANDBOX=1 -w /csce431/test_app magical_haibt bin/rails test:system
+docker exec -u postgres magical_haibt psql -c "CREATE ROLE root LOGIN SUPERUSER;"
+try {
+  docker exec -e RAILS_ENV=test -e "DATABASE_URL=postgresql://root@localhost/test_app_test?host=/var/run/postgresql" -w /csce431/test_app magical_haibt bin/rails test
+  docker exec -e RAILS_ENV=test -e CHROME_NO_SANDBOX=1 -e "DATABASE_URL=postgresql://root@localhost/test_app_test?host=/var/run/postgresql" -w /csce431/test_app magical_haibt bin/rails test:system
+} finally {
+  docker exec -u postgres magical_haibt psql -c "DROP ROLE root;"
+}
 docker exec -w /csce431/test_app magical_haibt bundle exec rubocop
 docker exec -w /csce431/test_app magical_haibt bundle exec brakeman -o output.html
 docker exec -w /csce431/test_app magical_haibt bundle exec brakeman
 ```
+
+The temporary `root` database role above is **only for fixture loading in this
+root-run course container**, and assumes no pre-existing PostgreSQL `root` role.
+Do not recreate/remove a role you did not create. Rails 8 validates all foreign
+keys during Minitest fixture loading, including the new Solid Queue tables;
+this updates `pg_catalog.pg_constraint` and requires PostgreSQL superuser access.
+The course app role remains non-superuser. Local Unix sockets use peer
+authentication; the temporary role has no password and cannot log in over TCP.
+CI already uses its isolated PostgreSQL service's `postgres` administrator.
+Never apply this test setup to Heroku or grant the production app superuser.
 
 `CHROME_NO_SANDBOX=1` is an explicit opt-in for **root-run test Chrome in this
 course container only**; omit it on normal non-root hosts/CI. Tests otherwise keep
@@ -99,7 +114,7 @@ Verified locally:
   exercised the actual Google button, callback, green success flash, welcome,
   book content, stored-location return, and logout. A POST without a CSRF token
   returned **422**. Temporary smoke code and its records were removed.
-- Actual Google consent/account chooser/token exchange: **not verified**.
+- Actual local Google sign-in: **confirmed by the developer** after supplying credentials.
 
 OmniAuth mock mode is enabled **only in the test environment**. The expected
 invalid-credentials scenario may log an OmniAuth error even though its test passes.
@@ -122,18 +137,66 @@ No warning is suppressed or ignored. Brakeman exits **3** while this finding is
 present, so the CI security-scan job remains non-green. A framework upgrade is
 separate from the OAuth change. `output.html` is generated locally and ignored by Git.
 
-## Heroku and remaining submission work
+## Heroku deployment and remaining submission work
 
-No existing Heroku deployment was established from repository configuration or
-GitHub deployment records. No apps, add-ons, or dashboards were created/modified.
-The Admin migration is included and OAuth credentials are ENV-only. Production
-requires both Google config vars and its own exact callback URL added in Google
-Cloud. Existing production multi-database/Solid configuration and live deployment
-have not been verified; local test success is not a Heroku readiness certification.
+Deployment configuration is prepared; **no live Heroku deployment or Papertrail
+installation has been verified**. The CLI is installed in `magical_haibt`, but
+browser authorization is still required before account access and provisioning.
 
-Human-only work remains: Google Cloud configuration and real login, required
-screenshots (including the Brakeman report), Heroku/Papertrail setup and evidence,
-written answers, AI citation, and final PDF submission.
+### Production configuration
+
+- `Gemfile` reads Ruby 3.4.6 from `.ruby-version`; Bundler locks the runtime version.
+- `Procfile` runs `bundle exec rails db:migrate` in the release phase, then Puma
+  for the web process. Puma uses Heroku's assigned `PORT`.
+- Production uses one PostgreSQL database via Heroku's `DATABASE_URL`. Solid
+  Cache, Queue, and Cable share it with the application. Their former standalone
+  schema files are replaced by a normal migration; no additional databases or
+  Redis add-ons are needed. Releases migrate rather than reload/drop schemas.
+- `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` must be set as Heroku
+  config vars. Local `.env` is ignored and is not loaded in production.
+- HTTPS proxy handling, secure cookies, and tagged STDOUT logging are enabled.
+  Heroku captures STDOUT; Papertrail will consume the application's log stream.
+- No separate worker dyno is required for current book CRUD/OAuth. If background
+  jobs are added, enable the existing Solid Queue Puma integration or explicitly
+  provision a worker; database-backed enqueueing alone does not process jobs.
+- Local Active Storage is not durable on Heroku. The current app has no uploads;
+  configure external object storage before introducing them.
+
+Verified against an isolated PostgreSQL database with `RAILS_ENV=production`:
+book persistence; Solid Cache read/write; Solid Queue enqueueing and execution of
+the stored job payload; Solid Cable message persistence; asset precompilation;
+and a real Puma process serving `/up`, protected Books redirects, the sign-in
+form and stylesheet, a Google authorization redirect with the HTTPS callback,
+and HTTP 422 for an OAuth POST without its CSRF token. This did **not** exercise
+a running queue worker or complete Google's real token exchange on Heroku.
+
+### Account setup and deployment
+
+1. Authorize the container CLI using `docker exec -it magical_haibt heroku login`.
+   Complete the printed URL in your own browser; never share passwords/API tokens.
+2. Check existing apps, usage, and available student credits before provisioning.
+   The [GitHub Student offer](https://www.heroku.com/github-students/) provides
+   $13/month for 24 months. Basic web ($7/month rate) plus Essential-0 Postgres
+   ($5/month rate) fits that allowance only if credits are active and not consumed
+   elsewhere. Release/one-off dynos also consume usage. Resources remain billable
+   after credits expire. Student credits do not cover third-party add-ons.
+3. Create or select a personal Cedar app and one Essential-0 PostgreSQL database.
+   Set the Google config vars through Heroku's Settings dashboard without putting
+   their values in shell history or commits. Do not change the local callback.
+4. Deploy the reviewed feature-branch commit through Heroku's Ruby buildpack.
+   Check the release migration and scale exactly one Basic web dyno. Deploying
+   does not require merging the GitHub PR or enabling automatic deployments.
+5. Obtain the actual app URL from Heroku, including any randomized hostname
+   suffix. Add `https://<actual-app-host>/admins/auth/google_oauth2/callback` as an
+   additional authorized redirect URI on the existing Google Web OAuth client.
+6. Verify live `/up`, sign-in, real Google login, book CRUD, and sign-out. Install
+   Papertrail only after confirming its available plan is free; trigger a request
+   and verify its app log events before taking the required screenshots.
+
+Human-only submission work remains: browser account authorization, Google Cloud
+callback registration and real deployed login, required screenshots (including
+Brakeman and Heroku/Papertrail evidence), written answers, AI citation, and final
+PDF submission.
 
 ## AI-assisted change record
 
@@ -141,9 +204,10 @@ Prompt: **Implement Google OAuth with Devise + OmniAuth per CSCE 431 primer**.
 Changed source/config/test files carry AI-assistance comments. `Gemfile.lock` is
 Bundler-generated from the annotated Gemfile and has no added comment because its
 machine-readable lockfile format must be preserved. The schema was generated by
-Rails from the annotated Admin migration.
+Rails from the annotated Admin and shared Solid-table migrations.
 
 Changes cover OAuth dependencies and ENV handling; Admin model/migration;
 Devise initializer/translations; routes and authentication controllers; login,
 welcome, flash views/styles; shared mock helpers; RSpec/Minitest adaptations;
-CI suite execution; and this setup/verification report.
+CI suite execution; Heroku startup/release configuration and single-database
+Solid migration; and this setup/verification report.

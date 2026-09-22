@@ -1,3 +1,4 @@
+# AI-assisted — prompt: "Get Heroku up"; share the primary database with Solid Cache.
 default: &default
   store_options:
     # Cap age of oldest cache entry to fulfill retention policies
@@ -12,5 +13,4 @@ test:
   <<: *default
 
 production:
-  database: cache
   <<: *default
